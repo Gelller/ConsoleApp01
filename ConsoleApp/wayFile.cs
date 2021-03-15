@@ -82,8 +82,10 @@ namespace ConsoleApp
                     else
                     {
                         Console.SetCursorPosition(0, 29);
-                        Console.Write("Не существует");
-                        Console.ReadKey();
+                        Console.Write("Не существует, введите путь");
+                        Console.WriteLine();
+                        Program.way= Console.ReadLine();
+                        Console.Clear();
                         wayF(Program.way, filename);
                     }
                     

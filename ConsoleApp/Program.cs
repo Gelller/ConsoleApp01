@@ -17,10 +17,10 @@ namespace ConsoleApp
         public static string way=null;
         static void Main(string[] args)
         {
-                       
-             var size = (int.Parse(ConfigurationManager.AppSettings["numOfSto"]));//изначальное значение размера страницы в app.config
-             Console.SetWindowSize(int.Parse(ConfigurationManager.AppSettings["ConsoleSizeX"]), int.Parse(ConfigurationManager.AppSettings["ConsoleSizeY"]));
-             Console.SetBufferSize(int.Parse(ConfigurationManager.AppSettings["ConsoleSizeX"]), int.Parse(ConfigurationManager.AppSettings["ConsoleSizeY"]));
+
+            var size = (int.Parse(ConfigurationManager.AppSettings["numOfSto"]));//изначальное значение размера страницы в app.config
+            Console.SetWindowSize(int.Parse(ConfigurationManager.AppSettings["ConsoleSizeX"]), int.Parse(ConfigurationManager.AppSettings["ConsoleSizeY"]));
+            Console.SetBufferSize(int.Parse(ConfigurationManager.AppSettings["ConsoleSizeX"]), int.Parse(ConfigurationManager.AppSettings["ConsoleSizeY"]));
 
 
             List<string> storyCommand = new List<string>();//лист истории комманд
@@ -30,25 +30,44 @@ namespace ConsoleApp
             var OutFile = new OutFile();
             var command = new Command();
 
-            //предыдущий путь 
-            var json = JsonSerializer.Deserialize<string>(File.ReadAllText("oldCommand.json"));
-            
-            if (json != null)
+
+           
+            var settingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "oldCommand.json");
+            if (File.Exists(settingsPath))
             {
-                way = json;
 
+                var jsonControl = File.ReadAllText(settingsPath);
+                if(jsonControl.ToString()=="")
+                    File.WriteAllText(settingsPath, "\"\" ");
+
+                var json = JsonSerializer.Deserialize<string>(File.ReadAllText(settingsPath));
+        
+                    if (json != null)
+                    {
+                        way = json;
+
+                    }
+                    else
+                        way = null;
+
+                    if (way == null)
+                    {
+                        Console.WriteLine("Введите путь");
+                        way = Console.ReadLine();
+                        Console.Clear();
+                    }
             }
-            else        
-                way = null;
-
-            if (way == null)
+            else
             {
-                Console.WriteLine("Введите путь");
-                way = Console.ReadLine();
-                Console.Clear();
+                        File.Create(settingsPath);
+                        Console.WriteLine("Введите путь");
+                        way = Console.ReadLine();
+                        Console.Clear();
             }
 
-            wayFile.wayF(way, NodeFile);//формирование что-то вроде дерева 
+
+    wayFile.wayF(way, NodeFile);//формирование что-то вроде дерева 
+
             OutFile.clearList();
             OutFile.FirstListNode(NodeFile);//запись в лист корня каталога
             OutFile.outFile(NodeFile);//запись в лист всех элементов каталога
